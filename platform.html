@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doable.ai - AI-Powered Tool Creation Platform</title>
+    <meta name="description" content="Build any automation or tool simply by describing it. Doable.ai creates workflows, writes code, connects APIs, and builds your tool end-to-end.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/platform.css">
+</head>
+<body>
+    <!-- Platform Navigation -->
+    <nav class="platform-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-text">Doable.ai</span>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active">Dashboard</a>
+                <a href="create.html" class="nav-link">Create</a>
+                <a href="#templates" class="nav-link">Templates</a>
+                <a href="#projects" class="nav-link">Projects</a>
+                <a href="#marketplace" class="nav-link">Marketplace</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search tools, templates...">
+            </div>
+            <button class="upgrade-btn">
+                <i class="fas fa-crown"></i>
+                Upgrade
+            </button>
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <span>JD</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="#profile">Profile</a>
+                    <a href="#settings">Settings</a>
+                    <a href="#billing">Billing</a>
+                    <a href="#signout">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Platform Container -->
+    <div class="platform-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Quick Start</h3>
+                <a href="create.html" class="create-tool-btn">
+                    <i class="fas fa-plus"></i>
+                    Create New Tool
+                </a>
+                <div class="quick-actions">
+                    <button class="quick-action">
+                        <i class="fas fa-magic"></i>
+                        AI Assistant
+                    </button>
+                    <button class="quick-action">
+                        <i class="fas fa-import"></i>
+                        Import Project
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Categories</h3>
+                <div class="category-list">
+                    <div class="category-item active">
+                        <i class="fas fa-star"></i>
+                        All Tools
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-robot"></i>
+                        Automation
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-envelope"></i>
+                        Communication
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-database"></i>
+                        Data Processing
+                    </div>
+                    <div class="category-item">
+                        <i class="fas fa-cog"></i>
+                        Utilities
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Recent Activity</h3>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="activity-text">
+                            <div class="activity-title">Instagram Bot deployed</div>
+                            <div class="activity-time">2 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon warning">
+                            <i class="fas fa-exclamation"></i>
+                        </div>
+                        <div class="activity-text">
+                            <div class="activity-title">Lead scraper needs review</div>
+                            <div class="activity-time">15 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon info">
+                            <i class="fas fa-info"></i>
+                        </div>
+                        <div class="activity-text">
+                            <div class="activity-title">New template available</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div class="header-left">
+                    <h1>Dashboard</h1>
+                    <p>Build, deploy, and manage your AI-powered tools</p>
+                </div>
+                <div class="header-right">
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-number">12</span>
+                            <span class="stat-label">Active Tools</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">847</span>
+                            <span class="stat-label">Total Runs</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">99.8%</span>
+                            <span class="stat-label">Uptime</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tool Creation Interface -->
+            <div class="tool-creation-interface">
+                <div class="creation-header">
+                    <h2>Create Your Tool</h2>
+                    <div class="creation-modes">
+                        <button class="mode-btn active" data-mode="prompt">
+                            <i class="fas fa-keyboard"></i>
+                            Prompt
+                        </button>
+                        <button class="mode-btn" data-mode="template">
+                            <i class="fas fa-layer-group"></i>
+                            Template
+                        </button>
+                        <button class="mode-btn" data-mode="scratch">
+                            <i class="fas fa-code"></i>
+                            From Scratch
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prompt Mode -->
+                <div class="creation-mode active" id="prompt-mode">
+                    <div class="prompt-interface">
+                        <div class="prompt-input-area">
+                            <textarea 
+                                id="toolPrompt" 
+                                placeholder="Describe what you want to build... For example: 'Create an Instagram automation tool that generates daily posts, schedules them, and tracks engagement'"
+                                rows="4"
+                            ></textarea>
+                            <div class="prompt-suggestions">
+                                <span>Suggestions:</span>
+                                <button class="suggestion-btn" data-suggestion="Build a lead generation system that finds potential customers on LinkedIn and exports them to Google Sheets">Lead Generation</button>
+                                <button class="suggestion-btn" data-suggestion="Create a WhatsApp chatbot that automatically responds to customer inquiries and forwards complex issues to support">WhatsApp Bot</button>
+                                <button class="suggestion-btn" data-suggestion="Develop a data pipeline that collects website analytics and creates daily reports with insights">Analytics Pipeline</button>
+                                <button class="suggestion-btn" data-suggestion="Build an email automation system that sends personalized follow-ups based on customer behavior">Email Automation</button>
+                            </div>
+                        </div>
+                        <div class="prompt-actions">
+                            <button class="generate-btn" id="generateTool">
+                                <i class="fas fa-magic"></i>
+                                Generate Tool
+                            </button>
+                            <button class="advanced-btn" id="advancedOptions">
+                                <i class="fas fa-cog"></i>
+                                Advanced
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Template Mode -->
+                <div class="creation-mode" id="template-mode">
+                    <div class="template-gallery">
+                        <div class="template-categories">
+                            <button class="template-cat active" data-cat="all">All Templates</button>
+                            <button class="template-cat" data-cat="automation">Automation</button>
+                            <button class="template-cat" data-cat="analytics">Analytics</button>
+                            <button class="template-cat" data-cat="communication">Communication</button>
+                            <button class="template-cat" data-cat="data">Data Processing</button>
+                        </div>
+                        <div class="template-grid" id="templateGrid">
+                            <!-- Templates will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- From Scratch Mode -->
+                <div class="creation-mode" id="scratch-mode">
+                    <div class="scratch-interface">
+                        <div class="scratch-options">
+                            <div class="scratch-option" data-type="workflow">
+                                <i class="fas fa-project-diagram"></i>
+                                <h3>Workflow Builder</h3>
+                                <p>Visual workflow designer</p>
+                            </div>
+                            <div class="scratch-option" data-type="code">
+                                <i class="fas fa-code"></i>
+                                <h3>Code Editor</h3>
+                                <p>Write code manually</p>
+                            </div>
+                            <div class="scratch-option" data-type="api">
+                                <i class="fas fa-plug"></i>
+                                <h3>API Builder</h3>
+                                <p>Connect and integrate APIs</p>
+                            </div>
+                            <div class="scratch-option" data-type="form">
+                                <i class="fas fa-wpforms"></i>
+                                <h3>Form Builder</h3>
+                                <p>Create custom forms and inputs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects -->
+            <div class="recent-projects">
+                <div class="section-header">
+                    <h2>Recent Projects</h2>
+                    <a href="#projects" class="view-all">View All</a>
+                </div>
+                <div class="projects-grid" id="projectsGrid">
+                    <!-- Projects will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Template Showcase -->
+            <div class="template-showcase">
+                <div class="section-header">
+                    <h2>Popular Templates</h2>
+                    <p>Start with proven templates from the community</p>
+                </div>
+                <div class="showcase-grid" id="showcaseGrid">
+                    <!-- Showcase templates will be populated by JavaScript -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Tool Builder Modal -->
+    <div class="modal-overlay" id="toolBuilderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Building Your Tool</h3>
+                <button class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="build-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="step active" data-step="1">
+                            <span class="step-number">1</span>
+                            <span class="step-label">Analyzing Requirements</span>
+                        </div>
+                        <div class="step" data-step="2">
+                            <span class="step-number">2</span>
+                            <span class="step-label">Designing Workflow</span>
+                        </div>
+                        <div class="step" data-step="3">
+                            <span class="step-number">3</span>
+                            <span class="step-label">Generating Code</span>
+                        </div>
+                        <div class="step" data-step="4">
+                            <span class="step-number">4</span>
+                            <span class="step-label">Testing & Deployment</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="build-preview-modal" id="buildPreviewModal">
+                    <!-- Build preview will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Options Modal -->
+    <div class="modal-overlay" id="advancedModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Advanced Options</h3>
+                <button class="close-modal" id="closeAdvanced">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="advanced-options">
+                    <div class="option-group">
+                        <label>Programming Language</label>
+                        <select id="languageSelect">
+                            <option value="auto">Auto-detect</option>
+                            <option value="python">Python</option>
+                            <option value="javascript">JavaScript</option>
+                            <option value="typescript">TypeScript</option>
+                            <option value="go">Go</option>
+                            <option value="rust">Rust</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Framework</label>
+                        <select id="frameworkSelect">
+                            <option value="auto">Auto-detect</option>
+                            <option value="none">None</option>
+                            <option value="flask">Flask</option>
+                            <option value="django">Django</option>
+                            <option value="express">Express.js</option>
+                            <option value="nextjs">Next.js</option>
+                            <option value="react">React</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Deployment Target</label>
+                        <select id="deploymentSelect">
+                            <option value="cloud">Cloud (Default)</option>
+                            <option value="edge">Edge Functions</option>
+                            <option value="docker">Docker Container</option>
+                            <option value="serverless">Serverless</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Performance Tier</label>
+                        <select id="performanceSelect">
+                            <option value="standard">Standard</option>
+                            <option value="performance">Performance</option>
+                            <option value="enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelAdvanced">Cancel</button>
+                    <button class="btn-primary" id="saveAdvanced">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/platform.js"></script>
+</body>
+</html>
