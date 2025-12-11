@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Tool - Doable.ai</title>
+    <link rel="stylesheet" href="css/platform.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .typing-platform {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            padding-top: 64px;
+        }
+
+        .typing-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            padding: var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .typing-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .typing-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-top: var(--spacing-xs);
+        }
+
+        .typing-main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: var(--spacing-xl);
+            padding: var(--spacing-xl);
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .prompt-editor {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
+            backdrop-filter: var(--blur-md);
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .editor-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .editor-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.9rem;
+        }
+
+        .editor-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-accent);
+        }
+
+        .editor-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .editor-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-glow);
+        }
+
+        .prompt-textarea {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            min-height: 300px;
+            font-family: var(--font-family-primary);
+            transition: var(--transition-fast);
+        }
+
+        .prompt-textarea:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px var(--shadow-glow);
+        }
+
+        .prompt-textarea::placeholder {
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        .typing-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .suggestions-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            backdrop-filter: var(--blur-md);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .suggestion-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .suggestion-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-accent);
+            transform: translateY(-1px);
+        }
+
+        .suggestion-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-primary);
+        }
+
+        .suggestion-item p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .examples-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            backdrop-filter: var(--blur-md);
+        }
+
+        .example-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-secondary);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+
+        .example-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-accent);
+        }
+
+        .example-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .typing-footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-primary);
+            padding: var(--spacing-lg) var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .character-count {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .character-count.warning {
+            color: var(--status-warning);
+        }
+
+        .character-count.error {
+            color: var(--status-error);
+        }
+
+        .typing-actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        @media (max-width: 1024px) {
+            .typing-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .typing-sidebar {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .typing-header {
+                flex-direction: column;
+                gap: var(--spacing-lg);
+                text-align: center;
+            }
+            
+            .typing-main {
+                padding: var(--spacing-md);
+            }
+            
+            .prompt-editor {
+                padding: var(--spacing-lg);
+            }
+            
+            .typing-footer {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="platform-nav">
+        <div class="nav-left">
+            <div class="logo-text">Doable.ai</div>
+            <div class="nav-links">
+                <a href="platform.html" class="nav-link">Dashboard</a>
+                <a href="create.html" class="nav-link active">Create</a>
+                <a href="editor.html" class="nav-link">Editor</a>
+                <a href="#" class="nav-link">Templates</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search tools, templates...">
+            </div>
+            <button class="upgrade-btn">
+                <i class="fas fa-crown"></i>
+                Upgrade
+            </button>
+            <div class="user-menu">
+                <div class="user-avatar">JD</div>
+                <div class="dropdown-menu">
+                    <a href="#">Profile</a>
+                    <a href="#">Settings</a>
+                    <a href="#">Billing</a>
+                    <a href="#">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Typing Platform -->
+    <div class="typing-platform">
+        <div class="typing-header">
+            <div>
+                <h1>Describe Your Tool</h1>
+                <p>Start typing to describe what you want to build. Our AI will understand your requirements and create the perfect tool for you.</p>
+            </div>
+            <div class="header-actions">
+                <button class="editor-btn">
+                    <i class="fas fa-lightbulb"></i>
+                    AI Assist
+                </button>
+            </div>
+        </div>
+
+        <div class="typing-main">
+            <div class="prompt-editor">
+                <div class="editor-header">
+                    <div class="editor-title">Your Tool Description</div>
+                    <div class="editor-actions">
+                        <button class="editor-btn" id="clear-btn">
+                            <i class="fas fa-eraser"></i>
+                            Clear
+                        </button>
+                        <button class="editor-btn" id="save-draft-btn">
+                            <i class="fas fa-save"></i>
+                            Save Draft
+                        </button>
+                        <button class="editor-btn primary" id="generate-btn">
+                            <i class="fas fa-magic"></i>
+                            Generate Tool
+                        </button>
+                    </div>
+                </div>
+                
+                <textarea 
+                    class="prompt-textarea" 
+                    id="prompt-input"
+                    placeholder="Describe what you want to build... 
+
+For example:
+• I want to create a tool that automatically posts to Instagram every day at 9 AM with AI-generated captions
+• Build me a lead generation system that finds email addresses from LinkedIn and sends personalized outreach emails
+• Create a dashboard that tracks my website traffic and sends me weekly reports
+• I need a tool that converts CSV files into beautiful charts and graphs
+• Build an AI chatbot that answers customer questions about my products
+
+Be as detailed as possible about what you want your tool to do."
+                ></textarea>
+            </div>
+
+            <div class="typing-sidebar">
+                <div class="suggestions-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-sparkles"></i>
+                        AI Suggestions
+                    </div>
+                    <div class="suggestion-item" data-suggestion="social-media">
+                        <h4>Social Media Automation</h4>
+                        <p>Automatically post content across multiple platforms with AI-generated captions and hashtags</p>
+                    </div>
+                    <div class="suggestion-item" data-suggestion="lead-gen">
+                        <h4>Lead Generation System</h4>
+                        <p>Find and qualify leads from various sources with automated outreach campaigns</p>
+                    </div>
+                    <div class="suggestion-item" data-suggestion="dashboard">
+                        <h4>Analytics Dashboard</h4>
+                        <p>Track key metrics and generate automated reports with visualizations</p>
+                    </div>
+                    <div class="suggestion-item" data-suggestion="chatbot">
+                        <h4>AI Chatbot</h4>
+                        <p>Create intelligent chatbots that understand and respond to customer queries</p>
+                    </div>
+                </div>
+
+                <div class="examples-panel">
+                    <div class="panel-title">
+                        <i class="fas fa-code"></i>
+                        Quick Examples
+                    </div>
+                    <button class="example-btn" data-example="email-automation">
+                        Email Automation Tool
+                    </button>
+                    <button class="example-btn" data-example="data-scraper">
+                        Web Data Scraper
+                    </button>
+                    <button class="example-btn" data-example="form-builder">
+                        Dynamic Form Builder
+                    </button>
+                    <button class="example-btn" data-example="file-processor">
+                        File Processing Tool
+                    </button>
+                    <button class="example-btn" data-example="notification-system">
+                        Notification System
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="typing-footer">
+            <div class="character-count" id="char-count">
+                0 characters
+            </div>
+            <div class="typing-actions">
+                <button class="editor-btn" id="preview-btn">
+                    <i class="fas fa-eye"></i>
+                    Preview
+                </button>
+                <button class="editor-btn primary" id="create-tool-btn">
+                    <i class="fas fa-rocket"></i>
+                    Create Tool
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Character counter
+        const promptInput = document.getElementById('prompt-input');
+        const charCount = document.getElementById('char-count');
+        
+        promptInput.addEventListener('input', function() {
+            const length = this.value.length;
+            charCount.textContent = `${length} characters`;
+            
+            if (length > 500) {
+                charCount.classList.add('warning');
+                charCount.classList.remove('error');
+            } else if (length > 1000) {
+                charCount.classList.add('error');
+                charCount.classList.remove('warning');
+            } else {
+                charCount.classList.remove('warning', 'error');
+            }
+        });
+
+        // Button actions
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear the current description?')) {
+                promptInput.value = '';
+                promptInput.focus();
+                charCount.textContent = '0 characters';
+                charCount.classList.remove('warning', 'error');
+            }
+        });
+
+        document.getElementById('save-draft-btn').addEventListener('click', function() {
+            if (promptInput.value.trim()) {
+                localStorage.setItem('doable-draft', promptInput.value);
+                alert('Draft saved successfully!');
+            } else {
+                alert('Please write something before saving as draft.');
+            }
+        });
+
+        document.getElementById('generate-btn').addEventListener('click', function() {
+            if (!promptInput.value.trim()) {
+                alert('Please describe what you want to build first.');
+                return;
+            }
+            
+            // Navigate to platform with the prompt
+            window.location.href = `platform.html?prompt=${encodeURIComponent(promptInput.value)}`;
+        });
+
+        document.getElementById('create-tool-btn').addEventListener('click', function() {
+            if (!promptInput.value.trim()) {
+                alert('Please describe what you want to build first.');
+                return;
+            }
+            
+            // Navigate to platform with the prompt
+            window.location.href = `platform.html?prompt=${encodeURIComponent(promptInput.value)}`;
+        });
+
+        // Load draft if exists
+        window.addEventListener('load', function() {
+            const draft = localStorage.getItem('doable-draft');
+            if (draft && !promptInput.value) {
+                if (confirm('You have a saved draft. Would you like to load it?')) {
+                    promptInput.value = draft;
+                    promptInput.dispatchEvent(new Event('input'));
+                }
+            }
+            promptInput.focus();
+        });
+
+        // Suggestion items
+        document.querySelectorAll('.suggestion-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const suggestion = this.dataset.suggestion;
+                const suggestions = {
+                    'social-media': 'Create a social media automation tool that can: Post content automatically across Instagram, Twitter, Facebook, and LinkedIn. Generate AI-powered captions and hashtags based on trending topics. Schedule posts for optimal engagement times. Track analytics and engagement metrics across all platforms. Create content calendars and suggest optimal posting schedules.',
+                    'lead-gen': 'Build a comprehensive lead generation system that: Scrapes LinkedIn for potential leads based on industry, company size, and job titles. Validates email addresses and contact information. Creates personalized outreach email templates based on lead profiles. Manages follow-up sequences and tracks response rates. Integrates with CRM systems to track lead progress through the sales funnel.',
+                    'dashboard': 'Develop an analytics dashboard that: Connects to Google Analytics, social media APIs, and email marketing platforms. Displays real-time metrics with interactive charts and graphs. Generates automated weekly and monthly reports. Sends alerts when key metrics fall below thresholds. Creates custom KPI tracking with goal setting and progress monitoring.',
+                    'chatbot': 'Design an intelligent AI chatbot that: Understands natural language queries about products and services. Provides accurate responses based on a knowledge base. Escalates complex queries to human agents when needed. Learns from customer interactions to improve responses. Integrates with existing customer support systems and ticketing platforms.'
+                };
+                
+                promptInput.value = suggestions[suggestion];
+                promptInput.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Example buttons
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const example = this.dataset.example;
+                const examples = {
+                    'email-automation': 'Create an email automation tool that: Sends personalized welcome emails to new subscribers. Follows up with customers who abandoned their shopping carts. Sends birthday wishes and special offers to customers. Manages email campaigns with A/B testing capabilities. Tracks open rates, click-through rates, and conversion metrics.',
+                    'data-scraper': 'Build a web data scraper that: Extracts product information from e-commerce websites. Monitors competitor pricing and sends alerts when prices change. Collects customer reviews and analyzes sentiment. Exports data to CSV, Excel, or Google Sheets. Runs on a schedule (daily, weekly, monthly) automatically.',
+                    'form-builder': 'Develop a dynamic form builder that: Creates custom forms with drag-and-drop functionality. Supports various field types (text, email, dropdown, checkbox, etc.). Validates user input in real-time. Integrates with popular email marketing services. Provides analytics on form submissions and conversion rates.',
+                    'file-processor': 'Create a file processing tool that: Converts between different file formats (PDF, Word, Excel, images). Compresses large files for easier sharing. Extracts text from images using OCR technology. Merges multiple files into a single document. Processes files in batches to save time.',
+                    'notification-system': 'Design a notification system that: Sends alerts via email, SMS, and push notifications. Monitors website uptime and sends alerts when sites go down. Tracks system performance metrics and sends warnings. Integrates with popular monitoring tools like New Relic or DataDog. Provides a dashboard to manage all notifications in one place.'
+                };
+                
+                promptInput.value = examples[example];
+                promptInput.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Preview functionality
+        document.getElementById('preview-btn').addEventListener('click', function() {
+            if (!promptInput.value.trim()) {
+                alert('Please write something to preview first.');
+                return;
+            }
+            
+            // Create a preview modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Tool Preview</h3>
+                        <button class="close-modal" onclick="this.closest('.modal-overlay').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h4>Your Tool Description:</h4>
+                        <p style="background: var(--bg-secondary); padding: var(--spacing-md); border-radius: var(--radius-md); margin: var(--spacing-md) 0; white-space: pre-wrap;">${promptInput.value}</p>
+                        <p style="color: var(--text-secondary); font-size: 0.9rem;">This is a preview of your tool description. Click "Create Tool" to proceed with building your tool.</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Close</button>
+                        <button class="btn-primary" onclick="window.location.href='platform.html?prompt=${encodeURIComponent(promptInput.value)}'">Create Tool</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        });
+    </script>
+</body>
+</html>
