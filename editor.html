@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doable.ai - Tool Editor</title>
+    <meta name="description" content="Visual editor for building and customizing automation tools">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/platform.css">
+    <style>
+        /* Additional editor-specific styles */
+        .editor-container {
+            display: flex;
+            height: calc(100vh - 64px);
+            margin-top: 64px;
+        }
+
+        .editor-sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        .editor-toolbar {
+            height: 60px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-primary);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--spacing-lg);
+            gap: var(--spacing-md);
+        }
+
+        .editor-workspace {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .workflow-canvas {
+            flex: 1;
+            background: var(--bg-primary);
+            position: relative;
+            overflow: auto;
+        }
+
+        .properties-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-primary);
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+
+        .toolbox-section {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .toolbox-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toolbox-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .toolbox-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            cursor: grab;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .toolbox-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-accent);
+        }
+
+        .toolbox-item:active {
+            cursor: grabbing;
+        }
+
+        .toolbox-item i {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+
+        .toolbox-item span {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .workflow-node {
+            position: absolute;
+            background: var(--bg-card);
+            border: 2px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md);
+            min-width: 150px;
+            cursor: move;
+            transition: var(--transition-fast);
+            backdrop-filter: var(--blur-md);
+        }
+
+        .workflow-node:hover {
+            border-color: var(--border-accent);
+            box-shadow: 0 8px 24px var(--shadow-primary);
+        }
+
+        .workflow-node.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--shadow-glow);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .node-icon {
+            color: var(--accent-blue);
+            font-size: 1.1rem;
+        }
+
+        .node-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .node-description {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .node-connections {
+            position: absolute;
+            top: 50%;
+            right: -8px;
+            transform: translateY(-50%);
+        }
+
+        .connection-point {
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .connection-point:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .workflow-connection {
+            position: absolute;
+            stroke: var(--accent-blue);
+            stroke-width: 2;
+            fill: none;
+            pointer-events: none;
+        }
+
+        .editor-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            color: var(--text-primary);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.9rem;
+        }
+
+        .editor-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-accent);
+        }
+
+        .editor-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .editor-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow-glow);
+        }
+
+        .properties-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .property-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .property-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .property-input {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+        }
+
+        .property-input:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px var(--shadow-glow);
+        }
+
+        .property-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .property-select {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            transition: var(--transition-fast);
+        }
+
+        .property-select:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px var(--shadow-glow);
+        }
+
+        .code-editor {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            font-family: var(--font-family-mono);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-primary);
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .code-editor:focus {
+            outline: none;
+            border-color: var(--border-accent);
+            box-shadow: 0 0 0 3px var(--shadow-glow);
+        }
+
+        .canvas-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .node-palette {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .node-palette-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-sm);
+            text-align: center;
+            cursor: grab;
+            transition: var(--transition-fast);
+        }
+
+        .node-palette-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-accent);
+        }
+
+        .node-palette-item i {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .node-palette-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .workflow-controls {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            display: flex;
+            gap: var(--spacing-sm);
+            z-index: 10;
+        }
+
+        .control-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-secondary);
+        }
+
+        .control-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-accent);
+        }
+
+        .control-btn.active {
+            background: var(--bg-active);
+            color: var(--text-accent);
+            border-color: var(--border-accent);
+        }
+
+        @media (max-width: 1024px) {
+            .editor-container {
+                flex-direction: column;
+            }
+            
+            .editor-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .properties-panel {
+                width: 280px;
+            }
+            
+            .workflow-controls {
+                position: fixed;
+                bottom: var(--spacing-lg);
+                right: var(--spacing-lg);
+                top: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .properties-panel {
+                display: none;
+            }
+            
+            .editor-workspace {
+                flex-direction: column;
+            }
+            
+            .workflow-controls {
+                position: fixed;
+                bottom: var(--spacing-lg);
+                right: var(--spacing-lg);
+                left: var(--spacing-lg);
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Editor Navigation -->
+    <nav class="platform-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <span class="logo-text">Doable.ai</span>
+            </div>
+            <div class="nav-links">
+                <a href="platform.html" class="nav-link">Dashboard</a>
+                <a href="#" class="nav-link active">Editor</a>
+                <a href="#" class="nav-link">Templates</a>
+                <a href="#" class="nav-link">Projects</a>
+            </div>
+        </div>
+        <div class="nav-right">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search tools, templates...">
+            </div>
+            <button class="upgrade-btn">
+                <i class="fas fa-crown"></i>
+                Upgrade
+            </button>
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <span>JD</span>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="#profile">Profile</a>
+                    <a href="#settings">Settings</a>
+                    <a href="#billing">Billing</a>
+                    <a href="#signout">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Editor Container -->
+    <div class="editor-container">
+        <!-- Editor Sidebar -->
+        <aside class="editor-sidebar">
+            <div class="toolbox-section">
+                <h3 class="toolbox-title">Workflow Nodes</h3>
+                <div class="node-palette">
+                    <div class="node-palette-item" draggable="true" data-node-type="trigger">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Trigger</span>
+                    </div>
+                    <div class="node-palette-item" draggable="true" data-node-type="action">
+                        <i class="fas fa-cog"></i>
+                        <span>Action</span>
+                    </div>
+                    <div class="node-palette-item" draggable="true" data-node-type="condition">
+                        <i class="fas fa-code-branch"></i>
+                        <span>Condition</span>
+                    </div>
+                    <div class="node-palette-item" draggable="true" data-node-type="delay">
+                        <i class="fas fa-clock"></i>
+                        <span>Delay</span>
+                    </div>
+                    <div class="node-palette-item" draggable="true" data-node-type="api">
+                        <i class="fas fa-plug"></i>
+                        <span>API Call</span>
+                    </div>
+                    <div class="node-palette-item" draggable="true" data-node-type="notification">
+                        <i class="fas fa-bell"></i>
+                        <span>Notification</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbox-section">
+                <h3 class="toolbox-title">Data Sources</h3>
+                <div class="toolbox-items">
+                    <div class="toolbox-item" draggable="true" data-node-type="database">
+                        <i class="fas fa-database"></i>
+                        <span>Database</span>
+                    </div>
+                    <div class="toolbox-item" draggable="true" data-node-type="spreadsheet">
+                        <i class="fas fa-file-excel"></i>
+                        <span>Spreadsheet</span>
+                    </div>
+                    <div class="toolbox-item" draggable="true" data-node-type="api-source">
+                        <i class="fas fa-cloud-download-alt"></i>
+                        <span>API Source</span>
+                    </div>
+                    <div class="toolbox-item" draggable="true" data-node-type="form">
+                        <i class="fas fa-wpforms"></i>
+                        <span>Form Input</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbox-section">
+                <h3 class="toolbox-title">Integrations</h3>
+                <div class="toolbox-items">
+                    <div class="toolbox-item" draggable="true" data-node-type="slack">
+                        <i class="fab fa-slack"></i>
+                        <span>Slack</span>
+                    </div>
+                    <div class="toolbox-item" draggable="true" data-node-type="gmail">
+                        <i class="fas fa-envelope"></i>
+                        <span>Gmail</span>
+                    </div>
+                    <div class="toolbox-item" draggable="true" data-node-type="webhook">
+                        <i class="fas fa-webhook"></i>
+                        <span>Webhook</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Editor Main Area -->
+        <main class="editor-main">
+            <!-- Editor Toolbar -->
+            <div class="editor-toolbar">
+                <div class="toolbar-left">
+                    <button class="editor-btn primary" id="runWorkflow">
+                        <i class="fas fa-play"></i>
+                        Run
+                    </button>
+                    <button class="editor-btn" id="saveWorkflow">
+                        <i class="fas fa-save"></i>
+                        Save
+                    </button>
+                    <button class="editor-btn" id="testWorkflow">
+                        <i class="fas fa-bug"></i>
+                        Test
+                    </button>
+                </div>
+                <div class="toolbar-center">
+                    <span class="workflow-name">Instagram Automation Workflow</span>
+                </div>
+                <div class="toolbar-right">
+                    <button class="editor-btn" id="undoAction">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="editor-btn" id="redoAction">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="editor-btn" id="settingsWorkflow">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editor Workspace -->
+            <div class="editor-workspace">
+                <!-- Workflow Canvas -->
+                <div class="workflow-canvas" id="workflowCanvas">
+                    <div class="canvas-grid"></div>
+                    
+                    <!-- Workflow Controls -->
+                    <div class="workflow-controls">
+                        <button class="control-btn" id="zoomIn" title="Zoom In">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                        <button class="control-btn" id="zoomOut" title="Zoom Out">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="control-btn" id="fitToScreen" title="Fit to Screen">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                        <button class="control-btn" id="autoLayout" title="Auto Layout">
+                            <i class="fas fa-magic"></i>
+                        </button>
+                    </div>
+
+                    <!-- Sample Workflow Nodes -->
+                    <div class="workflow-node" style="left: 100px; top: 100px;" data-node-id="1">
+                        <div class="node-header">
+                            <i class="fas fa-play-circle node-icon"></i>
+                            <span class="node-title">Daily Trigger</span>
+                        </div>
+                        <div class="node-description">Run every day at 9:00 AM</div>
+                        <div class="node-connections">
+                            <div class="connection-point" data-connection="output"></div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-node" style="left: 350px; top: 100px;" data-node-id="2">
+                        <div class="node-header">
+                            <i class="fas fa-image node-icon"></i>
+                            <span class="node-title">Generate Image</span>
+                        </div>
+                        <div class="node-description">Create Instagram post image</div>
+                        <div class="node-connections">
+                            <div class="connection-point" data-connection="input"></div>
+                            <div class="connection-point" data-connection="output"></div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-node" style="left: 600px; top: 100px;" data-node-id="3">
+                        <div class="node-header">
+                            <i class="fas fa-edit node-icon"></i>
+                            <span class="node-title">Generate Caption</span>
+                        </div>
+                        <div class="node-description">AI-generated post caption</div>
+                        <div class="node-connections">
+                            <div class="connection-point" data-connection="input"></div>
+                            <div class="connection-point" data-connection="output"></div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-node" style="left: 850px; top: 100px;" data-node-id="4">
+                        <div class="node-header">
+                            <i class="fab fa-instagram node-icon"></i>
+                            <span class="node-title">Post to Instagram</span>
+                        </div>
+                        <div class="node-description">Publish the post</div>
+                        <div class="node-connections">
+                            <div class="connection-point" data-connection="input"></div>
+                        </div>
+                    </div>
+
+                    <!-- SVG Connections -->
+                    <svg class="workflow-connection" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 1;">
+                        <path d="M 250 130 Q 300 130 350 130" stroke="var(--accent-blue)" stroke-width="2" fill="none"/>
+                        <path d="M 500 130 Q 550 130 600 130" stroke="var(--accent-blue)" stroke-width="2" fill="none"/>
+                        <path d="M 750 130 Q 800 130 850 130" stroke="var(--accent-blue)" stroke-width="2" fill="none"/>
+                    </svg>
+                </div>
+
+                <!-- Properties Panel -->
+                <div class="properties-panel">
+                    <h3 class="properties-title">Properties</h3>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Node Name</label>
+                        <input type="text" class="property-input" value="Daily Trigger" placeholder="Enter node name">
+                    </div>
+
+                    <div class="property-group">
+                        <label class="property-label">Description</label>
+                        <textarea class="property-input property-textarea" placeholder="Enter description">Run every day at 9:00 AM</textarea>
+                    </div>
+
+                    <div class="property-group">
+                        <label class="property-label">Schedule</label>
+                        <select class="property-select">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group">
+                        <label class="property-label">Time</label>
+                        <input type="time" class="property-input" value="09:00">
+                    </div>
+
+                    <div class="property-group">
+                        <label class="property-label">Timezone</label>
+                        <select class="property-select">
+                            <option value="UTC">UTC</option>
+                            <option value="EST">Eastern Time</option>
+                            <option value="PST">Pacific Time</option>
+                            <option value="GMT">GMT</option>
+                        </select>
+                    </div>
+
+                    <div class="property-group">
+                        <label class="property-label">Advanced Settings</label>
+                        <div style="display: flex; gap: var(--spacing-sm); flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <input type="checkbox" checked> Enable retries
+                            </label>
+                            <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <input type="checkbox"> Send notifications
+                            </label>
+                            <label style="display: flex; align-items: center; gap: var(--spacing-xs);">
+                                <input type="checkbox" checked> Log execution
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="property-group">
+                        <button class="editor-btn primary" style="width: 100%;">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                    </div>
+
+                    <div class="property-group">
+                        <button class="editor-btn" style="width: 100%; background: rgba(239, 68, 68, 0.1); color: var(--status-error); border-color: var(--status-error);">
+                            <i class="fas fa-trash"></i>
+                            Delete Node
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Node Configuration Modal -->
+    <div class="modal-overlay" id="nodeConfigModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Configure Node</h3>
+                <button class="close-modal" id="closeNodeConfig">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="property-group">
+                    <label class="property-label">Node Type</label>
+                    <select class="property-select" id="nodeTypeSelect">
+                        <option value="trigger">Trigger</option>
+                        <option value="action">Action</option>
+                        <option value="condition">Condition</option>
+                        <option value="delay">Delay</option>
+                        <option value="api">API Call</option>
+                        <option value="notification">Notification</option>
+                    </select>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Node Name</label>
+                    <input type="text" class="property-input" id="nodeNameInput" placeholder="Enter node name">
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Description</label>
+                    <textarea class="property-input property-textarea" id="nodeDescriptionInput" placeholder="Enter description"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelNodeConfig">Cancel</button>
+                    <button class="btn-primary" id="saveNodeConfig">Save Node</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Editor Modal -->
+    <div class="modal-overlay" id="codeEditorModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Code Editor</h3>
+                <button class="close-modal" id="closeCodeEditor">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="property-group">
+                    <label class="property-label">Language</label>
+                    <select class="property-select" id="codeLanguageSelect">
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="go">Go</option>
+                        <option value="rust">Rust</option>
+                    </select>
+                </div>
+                <div class="property-group">
+                    <label class="property-label">Code</label>
+                    <textarea class="code-editor" id="codeEditorTextarea" placeholder="# Write your code here
+import requests
+import json
+
+def main():
+    # Your automation code
+    pass
+
+if __name__ == '__main__':
+    main()"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="cancelCodeEditor">Cancel</button>
+                    <button class="btn-primary" id="saveCodeEditor">Save Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/platform.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+</html>
