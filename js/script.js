@@ -1,0 +1,312 @@
+// Smooth scrolling for navigation links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// Navbar scroll effect
+window.addEventListener('scroll', () => {
+    const navbar = document.querySelector('.navbar');
+    if (window.scrollY > 100) {
+        navbar.style.background = 'rgba(15, 15, 23, 0.98)';
+    } else {
+        navbar.style.background = 'rgba(15, 15, 23, 0.95)';
+    }
+});
+
+// Hero animation - typing effect
+const prompts = [
+    "Create an Instagram content automation tool",
+    "Build a lead generation system",
+    "Develop a WhatsApp chatbot",
+    "Create a data pipeline for analytics",
+    "Build a custom CRM dashboard"
+];
+
+let currentPromptIndex = 0;
+const promptText = document.getElementById('promptText');
+
+function typeWriter(text, element, callback) {
+    element.textContent = '';
+    let i = 0;
+    const speed = 50;
+    
+    function type() {
+        if (i < text.length) {
+            element.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        } else if (callback) {
+            setTimeout(callback, 2000);
+        }
+    }
+    
+    type();
+}
+
+function cyclePrompts() {
+    currentPromptIndex = (currentPromptIndex + 1) % prompts.length;
+    typeWriter(prompts[currentPromptIndex], promptText, () => {
+        setTimeout(cyclePrompts, 3000);
+    });
+}
+
+// Start the typing animation
+setTimeout(() => {
+    typeWriter(prompts[0], promptText, () => {
+        setTimeout(cyclePrompts, 3000);
+    });
+}, 1000);
+
+// Code animation
+const codeLines = [
+    "import instaloader",
+    "from datetime import datetime",
+    "import openai",
+    "import pandas as pd",
+    "from PIL import Image",
+    "import requests"
+];
+
+let currentCodeIndex = 0;
+const codeContent = document.getElementById('codeContent');
+
+function animateCode() {
+    codeContent.innerHTML = '';
+    
+    for (let i = 0; i < 3; i++) {
+        const lineIndex = (currentCodeIndex + i) % codeLines.length;
+        const line = document.createElement('div');
+        line.className = 'code-line';
+        line.textContent = codeLines[lineIndex];
+        line.style.animationDelay = `${i * 0.1}s`;
+        codeContent.appendChild(line);
+    }
+    
+    currentCodeIndex = (currentCodeIndex + 1) % codeLines.length;
+}
+
+// Start code animation
+setInterval(animateCode, 3000);
+
+// Demo functionality
+document.getElementById('demoButton').addEventListener('click', function() {
+    const prompt = document.getElementById('demoPrompt').value;
+    if (prompt.trim()) {
+        runDemoAnimation();
+    }
+});
+
+// Example prompt buttons
+document.querySelectorAll('.example-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const prompt = this.getAttribute('data-prompt');
+        document.getElementById('demoPrompt').value = prompt;
+        runDemoAnimation();
+    });
+});
+
+function runDemoAnimation() {
+    const stages = ['workflowStage', 'codeStage', 'interfaceStage'];
+    let currentStage = 0;
+    
+    // Hide all stages first
+    stages.forEach(stage => {
+        document.getElementById(stage).style.display = 'none';
+    });
+    
+    // Show and cycle through stages
+    function showNextStage() {
+        if (currentStage < stages.length) {
+            // Hide previous stage
+            if (currentStage > 0) {
+                document.getElementById(stages[currentStage - 1]).style.display = 'none';
+            }
+            
+            // Show current stage
+            document.getElementById(stages[currentStage]).style.display = 'block';
+            currentStage++;
+            
+            setTimeout(showNextStage, 2000);
+        } else {
+            // Reset to first stage after completion
+            setTimeout(() => {
+                stages.forEach(stage => {
+                    document.getElementById(stage).style.display = 'none';
+                });
+                document.getElementById('workflowStage').style.display = 'block';
+            }, 2000);
+        }
+    }
+    
+    showNextStage();
+}
+
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+        }
+    });
+}, observerOptions);
+
+// Observe elements for animation
+document.querySelectorAll('.step-card, .feature-card, .use-case-card, .testimonial-card, .pricing-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'all 0.6s ease';
+    observer.observe(el);
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(question => {
+    question.addEventListener('click', function() {
+        const answer = this.nextElementSibling;
+        const icon = this.querySelector('i');
+        
+        if (answer.style.display === 'block') {
+            answer.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            answer.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        }
+    });
+});
+
+// CTA buttons
+document.querySelectorAll('.btn-primary, .nav-cta, .pricing-btn, .final-cta .btn-primary').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+        // Add click animation
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            this.style.transform = '';
+        }, 150);
+        
+        // Handle specific button actions
+        if (this.textContent.includes('Start Creating') || this.textContent.includes('Start Pro Trial')) {
+            e.preventDefault();
+            // Simulate signup flow
+            alert('🚀 Welcome to Doable.ai!\n\nIn a real implementation, this would open a signup modal or redirect to the registration page.\n\nStart building your first automation today!');
+        } else if (this.textContent.includes('Watch Demo')) {
+            e.preventDefault();
+            // Scroll to demo section
+            document.querySelector('.product-showcase').scrollIntoView({
+                behavior: 'smooth'
+            });
+        } else if (this.textContent.includes('Contact Sales')) {
+            e.preventDefault();
+            alert('📞 Contact Sales\n\nEmail: sales@doable.ai\nPhone: 1-800-DOABLE-AI\n\nOur team will help you set up a custom enterprise solution.');
+        }
+    });
+});
+
+// Parallax effect for hero section
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroVisual = document.querySelector('.hero-visual');
+    if (heroVisual) {
+        heroVisual.style.transform = `translateY(${scrolled * 0.1}px)`;
+    }
+});
+
+// Add glow effect on hover for cards
+document.querySelectorAll('.step-card, .feature-card, .use-case-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.boxShadow = '0 20px 40px rgba(58, 141, 255, 0.2)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.boxShadow = '';
+    });
+});
+
+// Mobile menu toggle (for future mobile navigation)
+function toggleMobileMenu() {
+    const navMenu = document.querySelector('.nav-menu');
+    navMenu.classList.toggle('mobile-active');
+}
+
+// Add loading animation for demo button
+document.getElementById('demoButton').addEventListener('click', function() {
+    const originalText = this.innerHTML;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Building...';
+    this.disabled = true;
+    
+    setTimeout(() => {
+        this.innerHTML = originalText;
+        this.disabled = false;
+    }, 6000);
+});
+
+// Initialize tooltips for use cases
+document.querySelectorAll('.see-example-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const card = this.closest('.use-case-card');
+        const title = card.querySelector('h3').textContent;
+        
+        let examplePrompt = '';
+        switch(title) {
+            case 'Instagram Content Automation':
+                examplePrompt = 'Create an Instagram automation tool that generates daily posts using AI, schedules them for optimal times, and tracks engagement metrics';
+                break;
+            case 'Lead Generation Tools':
+                examplePrompt = 'Build a lead generation system that scrapes LinkedIn for potential clients, scores them based on criteria, and exports to Google Sheets';
+                break;
+            case 'Email & CRM Automations':
+                examplePrompt = 'Create an email automation system that sends personalized follow-ups, tracks opens/clicks, and syncs with CRM data';
+                break;
+            case 'Data Pipelines':
+                examplePrompt = 'Build a data pipeline that extracts data from multiple sources, cleans and transforms it, then loads into a database';
+                break;
+            case 'Custom Internal Tools':
+                examplePrompt = 'Create a custom dashboard for tracking team KPIs with real-time updates and automated reporting';
+                break;
+            case 'Business Operations Automations':
+                examplePrompt = 'Develop an inventory management system that tracks stock levels, sends reorder alerts, and generates purchase orders';
+                break;
+        }
+        
+        alert(`🎯 Example Prompt:\n\n${examplePrompt}\n\nClick "Build Tool" to see it in action!`);
+    });
+});
+
+// Add some interactive elements
+document.addEventListener('DOMContentLoaded', function() {
+    // Add pulse animation to CTA buttons
+    const ctaButtons = document.querySelectorAll('.btn-primary, .nav-cta');
+    ctaButtons.forEach(btn => {
+        setInterval(() => {
+            btn.style.boxShadow = '0 0 20px rgba(58, 141, 255, 0.6)';
+            setTimeout(() => {
+                btn.style.boxShadow = '';
+            }, 1000);
+        }, 5000);
+    });
+    
+    // Add floating animation to hero badge
+    const heroBadge = document.querySelector('.hero-badge');
+    if (heroBadge) {
+        setInterval(() => {
+            heroBadge.style.transform = 'translateY(-5px)';
+            setTimeout(() => {
+                heroBadge.style.transform = '';
+            }, 1000);
+        }, 3000);
+    }
+});
